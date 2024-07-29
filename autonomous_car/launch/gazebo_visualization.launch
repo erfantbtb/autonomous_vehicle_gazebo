@@ -1,0 +1,26 @@
+<launch>
+    <!-- Arguments for model and world -->
+    <arg name="model" default="$(find autonomous_car)/urdf/mobile_robot.urdf.xacro"/> 
+    <arg name="world" default="$(find autonomous_car)/worlds/bachelor_custom_world.world"/> 
+
+    <!-- Load the robot description from the URDF file -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+
+    <!-- Include the empty_world.launch file and specify the custom world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world)"/> 
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="recording" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+
+    <!-- Spawn the robot model in the Gazebo simulation -->
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_model"
+          args="-unpause -urdf -model robot -param robot_description"
+          output="screen" respawn="false" />
+
+    <node pkg="autonomous_car" type="human_random_walk.py" name="moving_obstacle" 
+    respawn="true" output="screen" />
+</launch>

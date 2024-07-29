@@ -1,0 +1,18 @@
+<launch>
+    <rosparam file="$(find autonomous_car_controller)/config/mobile_robot_configuration.yaml" command="load" />
+
+    <rosparam file="$(find joint_state_controller)/joint_state_controller.yaml" command="load" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"
+     respawn="false" output="screen" />
+    
+    <node pkg="controller_manager" type="spawner" name="controller_manager"
+    respawn="false" output="screen" 
+    args="left_wheel_controller  right_wheel_controller joint_state_controller"/>
+
+    <node pkg="autonomous_car_controller" type="speed_to_wheel_controller.py" name="simple_controller_node" 
+    respawn="true" output="screen" />
+
+    <!-- <node pkg="autonomous_car_controller" type="capture_images.py" name="image_saver" output="screen" /> -->
+
+</launch>
