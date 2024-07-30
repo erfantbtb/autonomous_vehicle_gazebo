@@ -19,6 +19,7 @@ class CameraImageCapture:
     def image_callback(self, data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            cv_image = cv2.resize(cv_image, dsize=(64, 64))
             self.current_image = cv_image / 255.0  
         except CvBridgeError as e:
             rospy.logerr(e)

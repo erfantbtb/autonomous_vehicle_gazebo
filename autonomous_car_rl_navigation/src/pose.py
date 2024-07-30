@@ -58,3 +58,8 @@ class GazeboModelState:
             return self.calculate_distance(model1_pose, model2_pose)
         else:
             return float('inf')
+        
+
+if __name__ == "__main__":
+    p = GazeboModelState()
+    print(p.calculate_distance_to_link("robot", "Wall_5"))

@@ -32,11 +32,10 @@ class AutonomousCarEnv(gym.Env):
         
         self.video_size = (timeseries_length, *self.image_shape)
         self.imu_size = (timeseries_length, 6)
-        self.observation_space = {
-            "videos": spaces.Box(low=0, high=255, shape=self.video_size, dtype=np.float32),
+        self.observation_space = spaces.Dict({
+            "videos": spaces.Box(low=0, high=255, shape=self.image_shape, dtype=np.float32),
             "imu": spaces.Box(low=-np.inf, high=np.inf, shape=self.imu_size, dtype=np.float32),
-        }
-
+        })
         # Define observation initial 
         self.imu_data = deque(maxlen=timeseries_length)
         self.camera_image = deque(maxlen=timeseries_length)
@@ -45,14 +44,11 @@ class AutonomousCarEnv(gym.Env):
         self.reached_goal = False 
         self.collision_with_wall = False 
 
-        self.distance_from_wall = 0.0 
-        self.distance_from_obstacle = 0.0 
-        self.distance_from_goal = 0.0 
+        self._get_distance_status()
 
         # Define Wheels publisher
         self.right_wheel_publisher = rospy.Publisher("/right_wheel_controller/command", Float64, queue_size=10)
         self.left_wheel_publisher = rospy.Publisher("/left_wheel_controller/command", Float64, queue_size=10)
-
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -105,45 +101,49 @@ class AutonomousCarEnv(gym.Env):
     def _get_state(self):
         # Get the latest IMU and camera data
         imu_data = self._read_imu_data()
-        image_data = self._read_image_data()
+        try:
+            image_data = self._read_image_data()
+        except ValueError as e:
+            rospy.logwarn(str(e))
+            image_data = np.zeros(self.image_shape)  # Handle invalid image data
 
         # Update the buffers
         self.imu_data.append(imu_data)
         self.camera_image.append(image_data)
 
         # Ensure buffers are filled initially
-        if len(self.imu_data) < self.timeseries_length:
-            for _ in range(self.timeseries_length - len(self.imu_data)):
-                self.imu_data.append(imu_data)
-                self.camera_image.append(image_data)
-        
+        while len(self.imu_data) < self.timeseries_length:
+            self.imu_data.append(imu_data)
+            self.camera_image.append(image_data)
+
         # Create the observation
-        imu_observation = np.array(self.imu_data)
-        video_observation = np.array(self.camera_image)
+        imu_observation = np.array(list(self.imu_data), dtype=np.float32)
+        video_observation = np.array(list(self.camera_image))
 
-        return {"videos": video_observation, "imu": imu_observation} 
-
+        return {"videos": video_observation, "imu": imu_observation}
+    
     def _get_reward(self):
-        self._get_distance_status()
         reward = 0.0 
 
         if self.collision_with_sphere:
             reward -= 100 
 
-        if self.distance_from_goal <= 0.5: 
+        if self.distance_from_goal <= 1: 
             reward += 100 
-
+        
         reward += max(0, 10 - self.distance_from_goal)
-        reward -= min(0, 10 - self.distance_from_obstacle)
+        reward -= max(0, 10 - self.distance_from_obstacle)
+        # reward += min(0, -0.1*self.distance_from_wall)
+
         return reward
 
     def _get_collission_status(self):
         terminated, trancuated = False, False 
 
-        if self.distance_from_goal <= 0.5:
+        if self.distance_from_goal <= 2:
             trancuated = True
 
-        if self.distance_from_obstacle <= 1:
+        if self.distance_from_obstacle <= 2 or self.distance_from_wall <= 2:
             terminated = True 
             self.collision_with_sphere == True 
 
@@ -153,21 +153,26 @@ class AutonomousCarEnv(gym.Env):
         pose = GazeboModelState() 
         self.distance_from_goal = pose.calculate_distance_to_model("robot", "bachelor_model")
         self.distance_from_obstacle = pose.calculate_distance_to_model("robot", "unit_sphere")
+        distances_from_wall = [
+            pose.calculate_distance_to_link("robot", "Wall_0"), 
+            pose.calculate_distance_to_link("robot", "Wall_1"), 
+            pose.calculate_distance_to_link("robot", "Wall_4"), 
+            pose.calculate_distance_to_link("robot", "Wall_5")]
 
-        self.distance_from_wall = min([pose.calculate_distance_to_link("robot", "Wall_0"), 
-                                       pose.calculate_distance_to_link("robot", "Wall_1"), 
-                                       pose.calculate_distance_to_link("robot", "Wall_4"), 
-                                       pose.calculate_distance_to_link("robot", "Wall_5")])
+        self.distance_from_wall = min(distances_from_wall)
         
-        print(self.distance_from_goal, self.distance_from_obstacle, self.distance_from_wall)
-
     def _set_rpm_wheels(self, rpm_left, rpm_right) -> None:
-        self.right_wheel_publisher.publish(rpm_right)
-        self.left_wheel_publisher.publish(rpm_left)
+        rospy.sleep(1)
+        right_speed = Float64(rpm_right)        
+        left_speed = Float64(rpm_left) 
+        
+        self.right_wheel_publisher.publish(right_speed)
+        self.left_wheel_publisher.publish(left_speed)
 
     def step(self, action): 
+        self._get_distance_status()
         rpm_left, rpm_right = action 
-        self._set_rpm_wheels(Float64(rpm_left), Float64(rpm_right))
+        self._set_rpm_wheels(rpm_left, rpm_right)
 
         observation = self._get_state()
         terminated, trancuated = self._get_collission_status()
@@ -176,13 +181,5 @@ class AutonomousCarEnv(gym.Env):
 
         return observation, reward, terminated, trancuated, info
 
-
-if __name__ == "__main__":
-    rospy.init_node("car_env_node", anonymous=True)
-    env = AutonomousCarEnv()
-    action = env.action_space.sample()
-    print(action)
-    state, reward, a, b, info = env.step(action)
-    rospy.spin()
       
 
