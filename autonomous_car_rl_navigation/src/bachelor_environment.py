@@ -4,7 +4,6 @@ import gymnasium as gym
 from gymnasium import spaces 
 
 import numpy as np 
-import matplotlib.pyplot as plt 
 from collections import deque
 
 import rospy  
@@ -23,14 +22,13 @@ class AutonomousCarEnv(gym.Env):
                  image_shape: tuple = (64, 64, 3), 
                  ) -> None:
         super(AutonomousCarEnv, self).__init__()
-        rospy.init_node("car_env_node", anonymous=True)
 
         # Define Hyperparameters
         self.timeseries_length = timeseries_length 
         self.image_shape = image_shape 
         
         # Define action space and observation space
-        self.action_space = spaces.Box(low=-4.0, high=4.0, shape=(2,), dtype=np.float32)
+        self.action_space = spaces.Box(low=4, high=10, shape=(2,), dtype=np.float32)
         
         self.video_size = (timeseries_length, *self.image_shape)
         self.imu_size = (timeseries_length, 6)
@@ -52,8 +50,9 @@ class AutonomousCarEnv(gym.Env):
         self.distance_from_goal = 0.0 
 
         # Define Wheels publisher
-        self.right_wheel_publisher = rospy.Publisher("right_wheel_controller/command", Float64, queue_size=10)
-        self.left_wheel_publisher = rospy.Publisher("left_wheel_controller/command", Float64, queue_size=10)
+        self.right_wheel_publisher = rospy.Publisher("/right_wheel_controller/command", Float64, queue_size=10)
+        self.left_wheel_publisher = rospy.Publisher("/left_wheel_controller/command", Float64, queue_size=10)
+
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -117,7 +116,7 @@ class AutonomousCarEnv(gym.Env):
             for _ in range(self.timeseries_length - len(self.imu_data)):
                 self.imu_data.append(imu_data)
                 self.camera_image.append(image_data)
-
+        
         # Create the observation
         imu_observation = np.array(self.imu_data)
         video_observation = np.array(self.camera_image)
@@ -125,10 +124,30 @@ class AutonomousCarEnv(gym.Env):
         return {"videos": video_observation, "imu": imu_observation} 
 
     def _get_reward(self):
+        self._get_distance_status()
         reward = 0.0 
 
+        if self.collision_with_sphere:
+            reward -= 100 
+
+        if self.distance_from_goal <= 0.5: 
+            reward += 100 
+
+        reward += max(0, 10 - self.distance_from_goal)
+        reward -= min(0, 10 - self.distance_from_obstacle)
+        return reward
+
     def _get_collission_status(self):
-        pass
+        terminated, trancuated = False, False 
+
+        if self.distance_from_goal <= 0.5:
+            trancuated = True
+
+        if self.distance_from_obstacle <= 1:
+            terminated = True 
+            self.collision_with_sphere == True 
+
+        return terminated, trancuated
 
     def _get_distance_status(self): 
         pose = GazeboModelState() 
@@ -139,25 +158,31 @@ class AutonomousCarEnv(gym.Env):
                                        pose.calculate_distance_to_link("robot", "Wall_1"), 
                                        pose.calculate_distance_to_link("robot", "Wall_4"), 
                                        pose.calculate_distance_to_link("robot", "Wall_5")])
+        
+        print(self.distance_from_goal, self.distance_from_obstacle, self.distance_from_wall)
 
-    def _set_rpm_wheels(self, rpm_left: float, rpm_right: float) -> None:
+    def _set_rpm_wheels(self, rpm_left, rpm_right) -> None:
         self.right_wheel_publisher.publish(rpm_right)
         self.left_wheel_publisher.publish(rpm_left)
 
     def step(self, action): 
         rpm_left, rpm_right = action 
-        self._set_rpm_wheels(rpm_left, rpm_right)
+        self._set_rpm_wheels(Float64(rpm_left), Float64(rpm_right))
 
         observation = self._get_state()
-        terminated, trancutaded = self._get_collission_status()
+        terminated, trancuated = self._get_collission_status()
         reward = self._get_reward()
         info = self._get_info()
 
-        return observation, reward, terminated, trancutaded, info
+        return observation, reward, terminated, trancuated, info
 
 
 if __name__ == "__main__":
-    # env = AutonomousCarEnv()
-    # env.reset()
-    pass         
+    rospy.init_node("car_env_node", anonymous=True)
+    env = AutonomousCarEnv()
+    action = env.action_space.sample()
+    print(action)
+    state, reward, a, b, info = env.step(action)
+    rospy.spin()
+      
 

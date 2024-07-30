@@ -1041,7 +1041,7 @@
       <pose>16.3732 4.77896 0.5 0 -0 0</pose>
       <link name='link'>
         <inertial>
-          <mass>1</mass>
+          <mass>5</mass>
           <inertia>
             <ixx>0.1</ixx>
             <ixy>0</ixy>

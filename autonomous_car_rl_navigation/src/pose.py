@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 
-#!/usr/bin/env python
-
 import rospy
 from gazebo_msgs.srv import GetModelState, GetLinkState
 from geometry_msgs.msg import Pose
 import numpy as np
+
 
 class GazeboModelState:
     def __init__(self):

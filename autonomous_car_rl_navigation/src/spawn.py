@@ -8,7 +8,6 @@ from geometry_msgs.msg import Pose, Twist
 
 class Spawner:
     def __init__(self):
-        # rospy.init_node('robot_spawner', anonymous=True)
         rospy.wait_for_service('/gazebo/set_model_state')
         self.set_model_state_service = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
         
@@ -34,5 +33,4 @@ class Spawner:
             rospy.loginfo(f"Spawned {model_name} at position {position} with orientation {orientation}")
         except rospy.ServiceException as e:
             rospy.logerr(f"Failed to spawn robot: {e}")
-
 
