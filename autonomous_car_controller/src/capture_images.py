@@ -6,6 +6,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import os
 from ultralytics import YOLO
+from ultralytics import FastSAM
 
 
 class ImageSaver:

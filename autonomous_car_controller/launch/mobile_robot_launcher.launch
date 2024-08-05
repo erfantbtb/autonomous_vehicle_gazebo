@@ -13,6 +13,6 @@
     <node pkg="autonomous_car_controller" type="speed_to_wheel_controller.py" name="simple_controller_node" 
     respawn="true" output="screen" />
 
-    <!-- <node pkg="autonomous_car_controller" type="capture_images.py" name="image_saver" output="screen" /> -->
+    <node pkg="autonomous_car_controller" type="capture_images.py" name="image_saver" output="screen" />
 
 </launch>
