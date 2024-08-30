@@ -1,7 +1,9 @@
 <launch>
     <!-- Arguments for model and world -->
-    <arg name="model" default="$(find autonomous_car)/urdf/mobile_robot.urdf.xacro"/> 
-    <arg name="world" default="$(find autonomous_car)/worlds/bachelor_custom_world.world"/> 
+    <arg name="model" default="$(find autonomous_car)/urdf/mobile_robot.urdf.xacro"/>
+    <arg name="world" default="empty_world"/> 
+ 
+    <!-- <arg name="world" default="$(find autonomous_car)/worlds/bachelor_custom_world.world"/>  -->
 
     <!-- Load the robot description from the URDF file -->
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
@@ -21,6 +23,7 @@
           args="-unpause -urdf -model robot -param robot_description"
           output="screen" respawn="false" />
 
-    <node pkg="autonomous_car" type="human_random_walk.py" name="moving_obstacle" 
-    respawn="true" output="screen" />
+    <!-- <node pkg="autonomous_car" type="human_random_walk.py" name="moving_obstacle" 
+    respawn="true" output="screen" /> -->
+
 </launch>
