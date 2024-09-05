@@ -33,6 +33,10 @@ class NormalImageProcessor:
 
             for i, contour in enumerate(contours):
                 if i == 0:
+                    self.coord_goal = [-1, -1]
+                    self.msg.data = self.coord_goal
+                    self.goal_distance_publisher.publish(self.msg)
+                    self.obstacle_distance_publisher.publish(self.msg)
                     continue
 
                 epsilon = 0.01*cv2.arcLength(contour, True)
@@ -47,18 +51,20 @@ class NormalImageProcessor:
                 self.center_coords = [x_mid, y_mid]
                 colour = (0, 255, 0)
                 font = cv2.FONT_HERSHEY_DUPLEX
+                
+                print(len(approx))
 
-                if len(approx) >= 4 and len(approx) <= 7:
+                if len(approx) >= 3 and len(approx) <= 10:
                     cv2.putText(self.normal_image, "Goal", self.center_coords, font, 1, colour, 1)
                     self.coord_goal = self.center_coords
                     self.msg.data = self.coord_goal
                     self.goal_distance_publisher.publish(self.msg)
 
-                elif len(approx) >= 10:
+                elif len(approx) >= 11:
                     cv2.putText(self.normal_image, "Obstacle", self.center_coords, font, 1, colour, 1)
                     self.coord_obstacle = self.center_coords 
                     self.msg.data = self.coord_obstacle
-                    self.obstacle_distance_publisher.publish(self.msg)
+                    self.obstacle_distance_publisher.publish(self.msg)                    
 
             self.visualize_normal_image()
 
@@ -76,6 +82,6 @@ class NormalImageProcessor:
         
 
 if __name__ == "__main__":
-    rospy.init_node('depth_image_processor', anonymous=True)
+    rospy.init_node('detect_shape_node', anonymous=True)
     dip = NormalImageProcessor()
     rospy.spin()

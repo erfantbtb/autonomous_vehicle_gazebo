@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="autonomous_car_distance_calculator" type="depth_camera_reciever.py" name="depth_image_processor" 
+    respawn="true" output="screen" />
+    <node pkg="autonomous_car_distance_calculator" type="detect_shape.py" name="detect_shape_node" 
+    respawn="true" output="screen" />
+</launch>

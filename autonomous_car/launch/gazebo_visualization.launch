@@ -23,7 +23,5 @@
           args="-unpause -urdf -model robot -param robot_description"
           output="screen" respawn="false" />
 
-    <!-- <node pkg="autonomous_car" type="human_random_walk.py" name="moving_obstacle" 
-    respawn="true" output="screen" /> -->
 
 </launch>

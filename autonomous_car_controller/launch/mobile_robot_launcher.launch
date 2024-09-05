@@ -10,8 +10,5 @@
     respawn="false" output="screen" 
     args="left_wheel_controller  right_wheel_controller joint_state_controller"/>
 
-    <node pkg="autonomous_car_controller" type="speed_to_wheel_controller.py" name="simple_controller_node" 
-    respawn="true" output="screen" />
-
 
 </launch>

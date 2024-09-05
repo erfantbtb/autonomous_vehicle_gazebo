@@ -30,7 +30,7 @@ class Spawner:
         # Call the service to set the model state
         try:
             self.set_model_state_service(model_state)
-            rospy.loginfo(f"Spawned {model_name} at position {position} with orientation {orientation}")
+            # rospy.loginfo(f"Spawned {model_name} at position {position} with orientation {orientation}")
         except rospy.ServiceException as e:
             rospy.logerr(f"Failed to spawn robot: {e}")
 

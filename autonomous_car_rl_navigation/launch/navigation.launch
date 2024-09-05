@@ -1,0 +1,9 @@
+<launch>
+
+    <node pkg="autonomous_car_rl_navigation" type="human_random_walk.py" name="moving_obstacle" 
+    respawn="true" output="screen" />
+    <node pkg="autonomous_car_rl_navigation" type="autonomous_car_environment.py" name="RL_training" 
+    respawn="true" output="screen" />
+
+
+</launch>

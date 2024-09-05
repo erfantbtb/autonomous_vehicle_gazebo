@@ -99,9 +99,9 @@ class ObstacleAvoidance:
 
             self.rate.sleep()
 
-if __name__ == '__main__':
-    try:
-        avoidance = ObstacleAvoidance()
-        avoidance.run()
-    except rospy.ROSInterruptException:
-        pass
+# if __name__ == '__main__':
+#     try:
+#         avoidance = ObstacleAvoidance()
+#         avoidance.run()
+#     except rospy.ROSInterruptException:
+#         pass

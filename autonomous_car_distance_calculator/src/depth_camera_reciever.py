@@ -58,42 +58,46 @@ class DepthImageProcessor:
             cv2.waitKey(1)
 
     def get_distance_from_goal(self, data):
-        coords = data.data 
-        x, y = int(coords[0]), int(coords[1])
-        
         if self.depth_image is not None:
-            if 0 <= x < self.depth_image.shape[1] and 0 <= y < self.depth_image.shape[0]:
-                self.distance_from_goal = self.depth_image[y, x]
-                self.angle_to_goal = self.calculate_angle(x)
-                self.goal_localization_data = [self.distance_from_goal, self.angle_to_goal]
-                self.msg.data = self.goal_localization_data
-                self.goal_localization_publisher.publish(self.msg)
-
+            coords = data.data
+            if coords:
+                x, y = int(coords[0]), int(coords[1])
+                if 0 <= x < self.depth_image.shape[1] and 0 <= y < self.depth_image.shape[0]:
+                    self.distance_from_goal = self.depth_image[y, x]
+                    self.angle_to_goal = self.calculate_angle(x)
+                    self.goal_localization_data = [self.distance_from_goal, self.angle_to_goal]
+                else:
+                    # rospy.logerr("Goal coordinates are out of bounds")
+                    self.goal_localization_data = [-1, -1]  # No goal detected
             else:
-                rospy.logerr("Coordinates are out of bounds")
-                return None
+                rospy.logwarn("No goal coordinates received")
+                self.goal_localization_data = [-1, -1]  # No goal detected
+
+            self.msg.data = self.goal_localization_data
+            self.goal_localization_publisher.publish(self.msg)
         else:
             rospy.logerr("Depth image is not available")
-            return None
-        
+
     def get_distance_from_obstacle(self, data):
-        coords = data.data 
-        x, y = int(coords[0]), int(coords[1])
-
         if self.depth_image is not None:
-            if 0 <= x < self.depth_image.shape[1] and 0 <= y < self.depth_image.shape[0]:
-                self.distance_from_obstacle = self.depth_image[y, x]
-                self.angle_to_obstacle = self.calculate_angle(x)
-                self.obstacle_localization_data = [self.distance_from_obstacle, self.angle_to_obstacle]
-                self.msg.data = self.obstacle_localization_data
-                self.obstacle_localization_publisher.publish(self.msg)
-
+            coords = data.data
+            if coords:
+                x, y = int(coords[0]), int(coords[1])
+                if 0 <= x < self.depth_image.shape[1] and 0 <= y < self.depth_image.shape[0]:
+                    self.distance_from_obstacle = self.depth_image[y, x]
+                    self.angle_to_obstacle = self.calculate_angle(x)
+                    self.obstacle_localization_data = [self.distance_from_obstacle, self.angle_to_obstacle]
+                else:
+                    # rospy.logerr("Obstacle coordinates are out of bounds")
+                    self.obstacle_localization_data = [-1, -1]  # No obstacle detected
             else:
-                rospy.logerr("Coordinates are out of bounds")
-                return None
+                rospy.logwarn("No obstacle coordinates received")
+                self.obstacle_localization_data = [-1, -1]  # No obstacle detected
+
+            self.msg.data = self.obstacle_localization_data
+            self.obstacle_localization_publisher.publish(self.msg)
         else:
             rospy.logerr("Depth image is not available")
-            return None
     
     def calculate_angle(self, x):
         if self.depth_image is not None:
