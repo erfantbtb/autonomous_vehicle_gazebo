@@ -36,7 +36,7 @@ class Moving():
                     # Move the sphere in the current direction along the Y-axis
                     obstacle.twist = Twist()
                     obstacle.twist.linear.x = 0.0
-                    obstacle.twist.linear.y = -4 * self.direction
+                    obstacle.twist.linear.y = -2 * self.direction
                     obstacle.twist.angular.z = 0.0
                     self.pub_model.publish(obstacle)
                     

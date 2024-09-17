@@ -23,9 +23,10 @@
     </actuator>
 </transmission>
 
+
     <gazebo reference="right_wheel">
-        <mu1>0.6</mu1>
-        <mu2>0.6</mu2>
+        <mu1>0.8</mu1>
+        <mu2>0.8</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
@@ -34,8 +35,8 @@
     </gazebo>
 
     <gazebo reference="left_wheel">
-        <mu1>0.6</mu1>
-        <mu2>0.6</mu2>
+        <mu1>0.8</mu1>
+        <mu2>0.8</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
@@ -44,8 +45,8 @@
     </gazebo>
 
     <gazebo reference="left_back_wheel">
-        <mu1>0.6</mu1>
-        <mu2>0.6</mu2>
+        <mu1>0.8</mu1>
+        <mu2>0.8</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
@@ -54,8 +55,8 @@
     </gazebo>
 
     <gazebo reference="right_back_wheel">
-        <mu1>0.6</mu1>
-        <mu2>0.6</mu2>
+        <mu1>0.8</mu1>
+        <mu2>0.8</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>

@@ -208,7 +208,10 @@ Visualization Manager:
       Enabled: true
       History Length: 1
       Joints:
-        {}
+        left_wheel_joint:
+          Value: true
+        right_wheel_joint:
+          Value: true
       Name: Effort
       Queue Size: 10
       Robot Description: robot_description

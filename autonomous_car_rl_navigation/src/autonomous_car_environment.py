@@ -30,7 +30,7 @@ class AutonomousCarEnv(gym.Env):
         super(AutonomousCarEnv, self).__init__()
 
         # Update action space to discrete changes in angular velocity
-        self.action_space = spaces.Discrete(3)  # Continuous action space for angular velocity
+        self.action_space = spaces.Discrete(1)  # Continuous action space for angular velocity
 
 
         # Update observation space to include linear and angular velocities
@@ -53,7 +53,7 @@ class AutonomousCarEnv(gym.Env):
         self.previous_goal_distance = -1
         self.previous_goal_angle = -1
 
-        self.current_linear_speed = 4.0
+        self.current_linear_speed = 3.0
         self.current_angular_velocity = 0.0
         self.wheel_base = 0.44 
         self.wheel_radius = 0.0975
@@ -70,9 +70,9 @@ class AutonomousCarEnv(gym.Env):
         rospy.Subscriber('/goal_localization', Float32MultiArray, self.goal_callback)
 
         self.action_map = {
-            0: -3.0, 
-            1: 0.0, 
-            2: 3.0
+            0: -0.5, 
+            # 1: 0.0, 
+            # 2: 0.5
         }
         rospy.sleep(0.5)
 
@@ -212,7 +212,7 @@ class AutonomousCarEnv(gym.Env):
         print(f"right wheel rpm is {rpm_right} and left rpm is {rpm_left}")
         print(f"linear velocity is {self.current_linear_speed} and angular velocity is {self.current_angular_velocity}")
 
-        if self.training_mode and self.obstacle_distance != -1 and self.obstacle_distance <= 6:
+        if self.training_mode and self.obstacle_distance != -1 and self.obstacle_distance <= 4:
             print("Obstacle Avoidance Method is running")
             rpm_left, rpm_right = self.apf.run()
             print("-------------------------------------------")
@@ -320,7 +320,7 @@ if __name__ == "__main__":
     model.learn(total_timesteps=100000, callback=[checkpoint_callback, plot_callback], progress_bar=True)
 
     # Evaluate the agent
-    mean_reward, std_reward = evaluate_policy(model, vec_env, n_eval_episodes=1000)
+    mean_reward, std_reward = evaluate_policy(model, vec_env, n_eval_episodes=100)
     print(f"Mean reward: {mean_reward}, Std reward: {std_reward}")
 
     # # Save the trained model
