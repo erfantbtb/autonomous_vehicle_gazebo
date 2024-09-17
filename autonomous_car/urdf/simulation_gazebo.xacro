@@ -1,65 +1,65 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mobile_robot_description">
-    <transmission name="right_wheel_transmition">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="right_wheel_joint">
-            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="right_wheel_motor">
-            <mechanicalReduction>1.0</mechanicalReduction>
-            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-        </actuator>
-    </transmission>
+  <transmission name="right_wheel_transmition">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="right_wheel_motor">
+        <mechanicalReduction>1.0</mechanicalReduction>
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+</transmission>
 
-    <transmission name="left_wheel_transmition">
-        <type>transmission_interface/SimpleTransmission</type>
-        <joint name="left_wheel_joint">
-            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-        </joint>
-        <actuator name="left_wheel_motor">
-            <mechanicalReduction>1.0</mechanicalReduction>
-            <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-        </actuator>
-    </transmission>
+<transmission name="left_wheel_transmition">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left_wheel_joint">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="left_wheel_motor">
+        <mechanicalReduction>1.0</mechanicalReduction>
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+</transmission>
 
-    <gazebo refrence="right_wheel">
-        <mu1>0.4</mu1>
-        <mu2>0.4</mu2>
+    <gazebo reference="right_wheel">
+        <mu1>0.6</mu1>
+        <mu2>0.6</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
-        <maxVel>0.1</maxVel>
+        <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
-    <gazebo refrence="left_wheel">
-        <mu1>0.4</mu1>
-        <mu2>0.4</mu2>
+    <gazebo reference="left_wheel">
+        <mu1>0.6</mu1>
+        <mu2>0.6</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
-        <maxVel>0.1</maxVel>
+        <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
-    <gazebo refrence="left_back_wheel">
-        <mu1>0.4</mu1>
-        <mu2>0.4</mu2>
+    <gazebo reference="left_back_wheel">
+        <mu1>0.6</mu1>
+        <mu2>0.6</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
-        <maxVel>0.1</maxVel>
+        <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
-    <gazebo refrence="right_back_wheel">
-        <mu1>0.4</mu1>
-        <mu2>0.4</mu2>
+    <gazebo reference="right_back_wheel">
+        <mu1>0.6</mu1>
+        <mu2>0.6</mu2>
         <kp>1000000</kp>
         <kd>1000</kd>
         <minDepth>0.001</minDepth>
-        <maxVel>0.1</maxVel>
+        <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
@@ -97,9 +97,9 @@
           <distortionK3>0.00000001</distortionK3>
           <distortionT1>0.00000001</distortionT1>
           <distortionT2>0.00000001</distortionT2>
-          <Cx>400</Cx> <!-- Principal point x in pixels (width/2) -->
-          <Cy>300</Cy> <!-- Principal point y in pixels (height/2) -->
-          <focalLength>692.818364</focalLength> <!-- Updated focal length -->
+          <Cx>400</Cx>
+          <Cy>300</Cy>
+          <focalLength>692.818364</focalLength>
           <hackBaseline>0</hackBaseline>
         </plugin>
       </sensor>
@@ -134,5 +134,4 @@
             <legacyModeNS>true</legacyModeNS>
         </plugin>
     </gazebo>
-
 </robot>

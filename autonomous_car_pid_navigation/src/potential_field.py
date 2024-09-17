@@ -24,10 +24,13 @@ class ObstacleAvoidance:
         self.base_rpm = 3  # Base RPM for the wheels
 
         # APF parameters
-        self.obstacle_weight = 30.0
-        self.goal_weight = 80.0
-        self.max_speed = 10.0
-        self.max_turn_rate = 6.0
+        self.obstacle_weight = 12.0
+        self.goal_weight = 45.0
+        self.max_speed = 8.0
+        self.max_turn_rate = 5.0
+
+        self.wheel_base = 0.44 
+        self.wheel_radius = 0.0975
 
         # Rate of execution
         self.rate = rospy.Rate(10)
@@ -46,15 +49,15 @@ class ObstacleAvoidance:
         w = 0
 
         # Check if goal and obstacle data are available
-        if self.goal_distance is not None and self.obstacle_distance is not None:
+        if self.goal_distance is not None and self.obstacle_distance is not None and self.goal_distance != -1 and self.obstacle_distance != -1:
             # Compute attractive force towards the goal
-            if self.goal_distance > 0:
+            if self.goal_distance > 1:
                 goal_force = self.goal_weight / self.goal_distance
                 v += min(self.max_speed, goal_force)
                 w += self.goal_weight * self.goal_angle
 
             # Compute repulsive force from the obstacle
-            if self.obstacle_distance > 0:
+            if self.obstacle_distance > 1:
                 obstacle_force = self.obstacle_weight / (self.obstacle_distance ** 2)
                 v -= min(self.max_speed, obstacle_force)
                 w -= self.obstacle_weight * self.obstacle_angle
@@ -62,14 +65,14 @@ class ObstacleAvoidance:
             # Normalize angular velocity
             w = max(-self.max_turn_rate, min(self.max_turn_rate, w))
 
-        elif self.goal_distance is not None:
+        elif self.goal_distance is not None and self.goal_distance != -1:
             # Only goal is detected
             if self.goal_distance > 0:
                 goal_force = self.goal_weight / self.goal_distance
                 v += min(self.max_speed, goal_force)
                 w += self.goal_weight * self.goal_angle
 
-        elif self.obstacle_distance is not None:
+        elif self.obstacle_distance is not None and self.obstacle_distance != -1:
             # Only obstacle is detected
             if self.obstacle_distance > 0:
                 obstacle_force = self.obstacle_weight / (self.obstacle_distance ** 2)
@@ -88,8 +91,9 @@ class ObstacleAvoidance:
 
             # Simple kinematic model to set left and right wheel RPMs
             # Adjust these formulas according to your robot's kinematics
-            left_rpm = v - (w * 0.5)
-            right_rpm = v + (w * 0.5)
+            right_rpm = (2*v + w*self.wheel_base) / (2*self.wheel_radius)
+            left_rpm = (2*v - w*self.wheel_base) / (2*self.wheel_radius)
+  
 
             print(left_rpm, right_rpm)
 

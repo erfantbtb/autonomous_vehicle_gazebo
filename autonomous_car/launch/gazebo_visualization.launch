@@ -1,9 +1,9 @@
 <launch>
-    <!-- Arguments for model and world -->
+    <!-- Arguments for model, goal, and world -->
     <arg name="model" default="$(find autonomous_car)/urdf/mobile_robot.urdf.xacro"/>
-    <arg name="world" default="empty_world"/> 
- 
-    <!-- <arg name="world" default="$(find autonomous_car)/worlds/bachelor_custom_world.world"/>  -->
+    <arg name="world" default="$(find autonomous_car)/worlds/custom.world"/> 
+     <!-- <arg name="world" default="$(find gazebo_ros)/launch/empty_world.launch"/> -->
+     
 
     <!-- Load the robot description from the URDF file -->
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
@@ -19,9 +19,8 @@
     </include>
 
     <!-- Spawn the robot model in the Gazebo simulation -->
-    <node pkg="gazebo_ros" type="spawn_model" name="spawn_model"
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_robot"
           args="-unpause -urdf -model robot -param robot_description"
           output="screen" respawn="false" />
-
 
 </launch>

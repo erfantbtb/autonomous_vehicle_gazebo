@@ -10,6 +10,7 @@ Panels:
         - /RobotModel1/Links1
         - /RobotModel1/Links1/camera_sensor_link1
         - /RobotModel1/Links1/car_body1
+        - /Effort1
       Splitter Ratio: 0.5
     Tree Height: 441
   - Class: rviz/Selection
@@ -64,15 +65,11 @@ Visualization Manager:
         All Enabled: true
         IMU_sensor_link:
           Value: true
-        back_steering:
-          Value: true
         base_link:
           Value: true
         camera_sensor_link:
           Value: true
         car_body:
-          Value: true
-        front_steering:
           Value: true
         left_back_wheel:
           Value: true
@@ -93,11 +90,8 @@ Visualization Manager:
           car_body:
             IMU_sensor_link:
               {}
-            back_steering:
+            camera_sensor_link:
               {}
-            front_steering:
-              camera_sensor_link:
-                {}
             left_back_wheel:
               {}
             left_wheel:
@@ -123,11 +117,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         Link Tree Style: Links in Alphabetic Order
-        back_steering:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         base_link:
           Alpha: 1
           Show Axes: false
@@ -138,11 +127,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         car_body:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        front_steering:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -182,15 +166,11 @@ Visualization Manager:
         All Enabled: true
         IMU_sensor_link:
           Value: true
-        back_steering:
-          Value: true
         base_link:
           Value: true
         camera_sensor_link:
           Value: true
         car_body:
-          Value: true
-        front_steering:
           Value: true
         left_back_wheel:
           Value: true
@@ -211,11 +191,8 @@ Visualization Manager:
           car_body:
             IMU_sensor_link:
               {}
-            back_steering:
+            camera_sensor_link:
               {}
-            front_steering:
-              camera_sensor_link:
-                {}
             left_back_wheel:
               {}
             left_wheel:
@@ -226,6 +203,21 @@ Visualization Manager:
               {}
       Update Interval: 0
       Value: true
+    - Alpha: 1
+      Class: rviz/Effort
+      Enabled: true
+      History Length: 1
+      Joints:
+        {}
+      Name: Effort
+      Queue Size: 10
+      Robot Description: robot_description
+      Scale: 1
+      TF Prefix: ""
+      Topic: ""
+      Unreliable: false
+      Value: true
+      Width: 0.019999999552965164
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -254,7 +246,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.311832904815674
+      Distance: 2.5857861042022705
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -262,17 +254,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.1533743292093277
-        Y: 0.3874315917491913
-        Z: 0.4068838953971863
+        X: 0.1282941699028015
+        Y: -0.11895006895065308
+        Z: 0.0273931622505188
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4047950804233551
+      Pitch: 1.0802017450332642
       Target Frame: <Fixed Frame>
-      Yaw: 4.113677024841309
+      Yaw: 3.1605193614959717
     Saved: ~
 Window Geometry:
   Displays:
@@ -290,5 +282,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1386
-  X: 303
+  X: 305
   Y: 27

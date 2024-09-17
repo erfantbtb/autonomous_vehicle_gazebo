@@ -97,6 +97,7 @@ class DepthImageProcessor:
             self.msg.data = self.obstacle_localization_data
             self.obstacle_localization_publisher.publish(self.msg)
         else:
+            
             rospy.logerr("Depth image is not available")
     
     def calculate_angle(self, x):

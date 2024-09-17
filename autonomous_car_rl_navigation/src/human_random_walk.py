@@ -9,7 +9,7 @@ class Moving():
     def __init__(self):
         self.pub_model = rospy.Publisher('gazebo/set_model_state', ModelState, queue_size=1)
         self.direction = 1  # 1 for forward, -1 for backward
-        self.change_direction_interval = 3.0  # Change direction every 2 seconds
+        self.change_direction_interval = 2.0  # Change direction every 3 seconds
         self.last_change_time = time.time()
         self.initial_y_position = None
         self.moving()
@@ -21,8 +21,8 @@ class Moving():
             current_time = time.time()
 
             for i in range(len(model.name)):
-                if model.name[i] == 'unit_sphere':
-                    obstacle.model_name = 'unit_sphere'
+                if model.name[i] == 'unit_sphere':  # Updated name
+                    obstacle.model_name = 'unit_sphere'  # Updated name
                     obstacle.pose = model.pose[i]
 
                     if self.initial_y_position is None:

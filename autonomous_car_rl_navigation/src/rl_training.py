@@ -1,39 +1,41 @@
 #!/usr/bin/python3
 
-import rospy 
+import gymnasium as gym 
+from gymnasium import spaces 
+
 import numpy as np 
-
+from collections import deque
+import matplotlib
+import matplotlib.pyplot as plt
 import torch 
-import torch.nn as nn 
-import torch.functional as f 
-from torch.optim import Adam 
 
-import matplotlib.pyplot as plt 
+import rospy  
+from spawn import Spawner
+from std_msgs.msg import Float64, Float32MultiArray
+from autonomous_car_rl_navigation.src.autonomous_car_environment import AutonomousCarEnv
 
 
-class ReplayBuffer:
-    def __init__(self, max_size: int = 1e6) -> None:
-        self.storage = []
-        self.max_size = max_size
-        self.ptr = 0 
+from stable_baselines3 import SAC
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.evaluation import evaluate_policy
+from stable_baselines3.common.callbacks import BaseCallback
 
-    def add(self, data):
-        if len(self.storage) == self.max_size:
-            self.storage[int(self.ptr)] = data 
-            self.ptr = (self.ptr + 1) % self.max_size
-        else:
-            self.storage.append(data)
 
-    def sample(self, batch_size):
-        ind = np.random.randint(0, len(self.storage), size=batch_size)
-        x, y, u, r, d, t = [], [], [], [], []
 
-        for i in ind:
-            state, next_state, action, reward, terminated, truncated = self.storage[i]
-            x.append(np.array(state, copy=False))
-            y.append(np.array(state, copy=False))
-            x.append(np.array(state, copy=False))
-            x.append(np.array(state, copy=False))
-            x.append(np.array(state, copy=False))
-            x.append(np.array(state, copy=False))
+if __name__ == "__main__":
+    rospy.init_node("RL_training")
+    env = AutonomousCarEnv()
+    env = Monitor(env)
+    vec_env = DummyVecEnv([lambda: env])
+    rospy.sleep(5)
+
+    # PPO Agent Configuration
+    policy_kwargs = dict(net_arch=[256, 256])
+
+    # Create and train the PPO agent
+    model = SAC("MultiInputPolicy", vec_env, policy_kwargs=policy_kwargs, verbose=1)
+    model.load("/home/erfan/catkin_ws/models/sac2_autonomous_car _100000_steps.zip")
 
