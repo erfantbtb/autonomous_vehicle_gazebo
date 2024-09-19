@@ -9,8 +9,10 @@
     <link name="car_body">
         <inertial>
             <origin xyz="0 0 0" rpy="0.0 0.0 0.0"/>
-            <mass value="45.0"/>
-            <inertia ixx="0.50425" ixy="0.0" ixz="0.0" iyy="1.6202500000000004" iyz="0.0" izz="2.0840000000000005" />
+            <mass value="15.0"/>
+            <inertia ixx="0.25" ixy="0.0" ixz="0.0"
+             iyy="0.81" iyz="0.0" 
+             izz="1" />
         </inertial>
         <visual>
             <origin xyz="0.0 -0.0 0.05" rpy="0.0 0.0 0.0"/>
@@ -97,14 +99,13 @@
         <parent link="car_body"/>
         <child link="IMU_sensor_link"/>
         <axis xyz="0.0 0.0 0.0"/>
-        <limit lower="0.0" upper="0.0" effort="0.0" velocity="0.0"/>
     </joint>
 
     <!-- Wheels -->
     <!-- right wheel -->
     <link name="right_wheel">
         <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="1.5708 0.0 0.0"/>
             <mass value="0.8"/>
             <inertia ixx="0.002" ixy="0.0" ixz="0.0" iyy="0.002" iyz="0.0" izz="0.0038"/>
 
@@ -134,7 +135,7 @@
 
     <link name="left_wheel">
         <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="1.5708 0.0 0.0"/>
             <mass value="0.8"/>
             <inertia ixx="0.002" ixy="0.0" ixz="0.0" iyy="0.002" iyz="0.0" izz="0.0038"/>
 
@@ -162,7 +163,7 @@
 
     <link name="left_back_wheel">
         <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="1.5708 0.0 0.0"/>
             <mass value="0.8"/>
             <inertia ixx="0.002" ixy="0.0" ixz="0.0" iyy="0.002" iyz="0.0" izz="0.0038"/>
 
@@ -182,7 +183,7 @@
     </link>
 
     <joint name="left_back_wheel_joint" type="continuous">
-        <origin xyz="-0.3 -0.25 0.03" rpy="0.0 0.0 0.0"/>
+        <origin xyz="-0.35 -0.25 0.03" rpy="0.0 0.0 0.0"/>
         <parent link="car_body"/>
         <child link="left_back_wheel"/>
         <axis xyz="0.0 1.0 0.0"/>
@@ -190,7 +191,7 @@
 
     <link name="right_back_wheel">
         <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="1.5708 0.0 0.0"/>
             <mass value="0.8"/>
             <inertia ixx="0.002" ixy="0.0" ixz="0.0" iyy="0.002" iyz="0.0" izz="0.0038"/>
 
@@ -210,7 +211,7 @@
     </link>
 
     <joint name="right_back_wheel_joint" type="continuous">
-        <origin xyz="-0.3 0.25 0.03" rpy="0.0 0.0 0.0"/>
+        <origin xyz="-0.35 0.25 0.03" rpy="0.0 0.0 0.0"/>
         <parent link="car_body"/>
         <child link="right_back_wheel"/>
         <axis xyz="0.0 1.0 0.0"/>

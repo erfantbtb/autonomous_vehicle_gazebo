@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mobile_robot_description">
-  <transmission name="right_wheel_transmition">
+  <!-- <transmission name="right_wheel_transmition">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="right_wheel_joint">
         <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
@@ -21,44 +21,66 @@
         <mechanicalReduction>1.0</mechanicalReduction>
         <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
     </actuator>
-</transmission>
+</transmission> -->
 
+
+    <gazebo>
+      <plugin name="skid_steering_controller" filename="libgazebo_ros_skid_steer_drive.so">
+        <updateRate>100.0</updateRate>
+        <robotNamespace>/</robotNamespace>
+        <leftFrontJoint>right_wheel_joint</leftFrontJoint>
+        <rightFrontJoint>left_wheel_joint</rightFrontJoint>
+        <leftRearJoint>right_back_wheel_joint</leftRearJoint>
+        <rightRearJoint>left_back_wheel_joint</rightRearJoint>
+        <wheelSeparation>0.5</wheelSeparation>
+        <wheelDiameter>0.195</wheelDiameter>
+        <robotBaseFrame>base_link</robotBaseFrame>
+        <torque>500</torque>
+        <topicName>cmd_vel</topicName>
+        <broadcastTF>false</broadcastTF>
+      </plugin>
+    </gazebo>
+
+    <gazebo reference="car_body">
+      <mu1>0.2</mu1>
+      <mu2>1</mu2>
+    </gazebo>
 
     <gazebo reference="right_wheel">
-        <mu1>0.8</mu1>
-        <mu2>0.8</mu2>
+        <mu1>0.2</mu1>
+        <mu2>1</mu2>
         <kp>1000000</kp>
-        <kd>1000</kd>
+        <kd>100</kd>
         <minDepth>0.001</minDepth>
         <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
     <gazebo reference="left_wheel">
-        <mu1>0.8</mu1>
-        <mu2>0.8</mu2>
+        <mu1>0.2</mu1>
+        <mu2>1</mu2>
         <kp>1000000</kp>
-        <kd>1000</kd>
+        <kd>100</kd>
         <minDepth>0.001</minDepth>
         <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
     <gazebo reference="left_back_wheel">
-        <mu1>0.8</mu1>
-        <mu2>0.8</mu2>
+        <mu1>0.2</mu1>
+        <mu2>1</mu2>
         <kp>1000000</kp>
-        <kd>1000</kd>
+        <kd>100</kd>
         <minDepth>0.001</minDepth>
         <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
     </gazebo>
 
     <gazebo reference="right_back_wheel">
-        <mu1>0.8</mu1>
-        <mu2>0.8</mu2>
+        <mu1>0.2</mu1>
+        <mu2>1</mu2>
         <kp>1000000</kp>
-        <kd>1000</kd>
+        <kd>100</kd>
         <minDepth>0.001</minDepth>
         <maxVel>3</maxVel>
         <fdir>1 0 0</fdir>
@@ -81,7 +103,7 @@
           </clip>
         </camera>
         <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
-          <baseline>0.2</baseline>
+          <baseline>0.1</baseline>
           <alwaysOn>true</alwaysOn>
           <updateRate>1.0</updateRate>
           <cameraName>depth_camera_ir</cameraName>

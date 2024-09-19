@@ -4,14 +4,13 @@ import rospy
 from std_msgs.msg import Float64
 from std_msgs.msg import Float32MultiArray
 import math
+import numpy as np
 
 
 class ObstacleAvoidance:
     def __init__(self):
-        # rospy.init_node('obstacle_avoidance_with_rpm')
-
         # Initialize subscribers and publishers
-        rospy.Subscriber('/obstacle_localization', Float32MultiArray, self.distance_callback)
+        rospy.Subscriber('/obstacle_localization', Float32MultiArray, self.obstacle_callback)
         rospy.Subscriber('/goal_localization', Float32MultiArray, self.goal_callback)
         self.left_wheel_rpm_pub = rospy.Publisher('/left_wheel_controller/command', Float64, queue_size=10)
         self.right_wheel_rpm_pub = rospy.Publisher('/right_wheel_controller/command', Float64, queue_size=10)
@@ -24,86 +23,93 @@ class ObstacleAvoidance:
         self.base_rpm = 3  # Base RPM for the wheels
 
         # APF parameters
-        self.obstacle_weight = 25.25
-        self.goal_weight = 70.0
-        self.max_speed = 5.0
-        self.max_turn_rate = 4.0
+        self.k_att = 10.0
+        self.k_rep = 100.0
+        self.d0 = 4.0  # Threshold distance for repulsive force
+        self.max_rep_force = 20.0
 
-        self.wheel_base = 0.44 
+        self.wheel_base = 0.44
         self.wheel_radius = 0.0975
+
+        self.max_speed = 5.0
+        self.max_turn_rate = 0.3
 
         # Rate of execution
         self.rate = rospy.Rate(10)
 
-    def distance_callback(self, data):
+    def obstacle_callback(self, data):
+        # Data format: [distance, angle]
         self.obstacle_distance = data.data[0]
-        self.obstacle_angle = data.data[1] * math.pi / 180  # Convert angle to radians
+        self.obstacle_angle = data.data[1] * math.pi / 180  # Convert degrees to radians
 
     def goal_callback(self, data):
+        # Data format: [distance, angle]
         self.goal_distance = data.data[0]
-        self.goal_angle = data.data[1] * math.pi / 180  # Convert angle to radians
+        self.goal_angle = data.data[1] * math.pi / 180  # Convert degrees to radians
+
+    def attractive_force(self, distance, angle):
+        """
+        Calculate the attractive force towards the goal based on distance and angle.
+        """
+        # The attractive force magnitude is inversely proportional to the distance
+        force_magnitude = self.k_att / distance
+        # Convert polar to Cartesian force components
+        fx = force_magnitude * math.cos(angle)
+        fy = force_magnitude * math.sin(angle)
+        return np.array([fx, fy])
+
+    def repulsive_force(self, distance, angle):
+        """
+        Calculate the repulsive force from an obstacle based on distance and angle.
+        """
+        if distance > self.d0:
+            # If the obstacle is far enough, no repulsive force is applied
+            return np.array([0.0, 0.0])
+
+        # The repulsive force magnitude decreases as distance increases, with a cutoff at d0
+        force_magnitude = self.k_rep * ((1/distance) - (1/self.d0)) * (1/distance**2)
+        force_magnitude = min(force_magnitude, self.max_rep_force)  # Cap the repulsive force
+        # Convert polar to Cartesian force components
+        fx = force_magnitude * math.cos(angle)
+        fy = force_magnitude * math.sin(angle)
+        return np.array([fx, fy])
+
+    def compute_total_force(self):
+        """
+        Calculate the total force acting on the robot from the goal and obstacles.
+        """
+        total_force = np.array([0.0, 0.0])
+
+        if self.goal_distance is not None and self.goal_distance > 0:
+            # Add attractive force towards the goal
+            total_force += self.attractive_force(self.goal_distance, self.goal_angle)
+
+        if self.obstacle_distance is not None and self.obstacle_distance > 0:
+            # Add repulsive force from the obstacle
+            total_force -= self.repulsive_force(self.obstacle_distance, self.obstacle_angle)
+
+        return total_force
 
     def compute_control(self):
-        # Initialize control parameters
-        v = 0
-        w = 0
+        """
+        Compute the linear and angular velocity of the robot based on the forces.
+        """
+        total_force = self.compute_total_force()
+        print(math.atan2(total_force[1], total_force[0]))
 
-        # Check if goal and obstacle data are available
-        if self.goal_distance is not None and self.obstacle_distance is not None and self.goal_distance != -1 and self.obstacle_distance != -1:
-            # Compute attractive force towards the goal
-            if self.goal_distance > 1:
-                goal_force = self.goal_weight / self.goal_distance
-                v += min(self.max_speed, goal_force)
-                w += self.goal_weight * self.goal_angle
+        # Compute linear velocity (v) from the force magnitude
+        v = 3.0
 
-            # Compute repulsive force from the obstacle
-            if self.obstacle_distance > 1:
-                obstacle_force = self.obstacle_weight / (self.obstacle_distance ** 2)
-                v -= min(self.max_speed, obstacle_force)
-                w -= self.obstacle_weight * self.obstacle_angle
-
-            # Normalize angular velocity
-            w = max(-self.max_turn_rate, min(self.max_turn_rate, w))
-
-        elif self.goal_distance is not None and self.goal_distance != -1:
-            # Only goal is detected
-            if self.goal_distance > 0:
-                goal_force = self.goal_weight / self.goal_distance
-                v += min(self.max_speed, goal_force)
-                w += self.goal_weight * self.goal_angle
-
-        elif self.obstacle_distance is not None and self.obstacle_distance != -1:
-            # Only obstacle is detected
-            if self.obstacle_distance > 0:
-                obstacle_force = self.obstacle_weight / (self.obstacle_distance ** 2)
-                v -= min(self.max_speed, obstacle_force)
-                w -= self.obstacle_weight * self.obstacle_angle
-
-        else:
-            v = 0
-            w = 0
+        # Compute angular velocity (w) from the force direction
+        w = -np.clip(math.atan2(total_force[1], total_force[0]), -self.max_turn_rate, self.max_turn_rate)
 
         return v, w
 
     def run(self):
         while not rospy.is_shutdown():
             v, w = self.compute_control()
-
-            # Simple kinematic model to set left and right wheel RPMs
-            # Adjust these formulas according to your robot's kinematics
-            right_rpm = (2*v + w*self.wheel_base) / (2*self.wheel_radius)
-            left_rpm = (2*v - w*self.wheel_base) / (2*self.wheel_radius)
-  
-
-            print(left_rpm, right_rpm)
-
-            # # Publish RPM commands
-            # self.left_wheel_rpm_pub.publish(Float64(left_rpm))
-            # self.right_wheel_rpm_pub.publish(Float64(right_rpm))
-
             self.rate.sleep()
-
-            return right_rpm, left_rpm
+            return v, w
         
 
 # if __name__ == "__main__":

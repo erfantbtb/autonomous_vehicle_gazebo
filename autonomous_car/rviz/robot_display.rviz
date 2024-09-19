@@ -208,10 +208,7 @@ Visualization Manager:
       Enabled: true
       History Length: 1
       Joints:
-        left_wheel_joint:
-          Value: true
-        right_wheel_joint:
-          Value: true
+        {}
       Name: Effort
       Queue Size: 10
       Robot Description: robot_description
@@ -249,7 +246,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.5857861042022705
+      Distance: 1.7621408700942993
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -257,17 +254,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.1282941699028015
-        Y: -0.11895006895065308
-        Z: 0.0273931622505188
+        X: 0.03226996213197708
+        Y: -0.35591578483581543
+        Z: -0.0029526331927627325
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0802017450332642
+      Pitch: 0.010202611796557903
       Target Frame: <Fixed Frame>
-      Yaw: 3.1605193614959717
+      Yaw: 3.010524272918701
     Saved: ~
 Window Geometry:
   Displays:

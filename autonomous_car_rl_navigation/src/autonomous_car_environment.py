@@ -12,6 +12,7 @@ import torch
 import rospy  
 from spawn import Spawner
 from std_msgs.msg import Float64, Float32MultiArray
+from geometry_msgs.msg import Twist
 
 from stable_baselines3 import SAC
 from stable_baselines3 import PPO
@@ -23,6 +24,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 from potential_field import ObstacleAvoidance
 
 
+
 class AutonomousCarEnv(gym.Env):
     metadata = {"render_mode": ["human", "rgb_array"], "render_fps": 4}
 
@@ -30,7 +32,7 @@ class AutonomousCarEnv(gym.Env):
         super(AutonomousCarEnv, self).__init__()
 
         # Update action space to discrete changes in angular velocity
-        self.action_space = spaces.Discrete(1)  # Continuous action space for angular velocity
+        self.action_space = spaces.Discrete(3)  # Continuous action space for angular velocity
 
 
         # Update observation space to include linear and angular velocities
@@ -60,19 +62,22 @@ class AutonomousCarEnv(gym.Env):
 
         self.apf = ObstacleAvoidance()
         self.training_mode = True
+        self.rate = rospy.Rate(10)
 
         self.time_step = 0
+        # self.right_wheel_publisher = rospy.Publisher("/right_wheel_controller/command", Float64, queue_size=10)
+        # self.left_wheel_publisher = rospy.Publisher("/left_wheel_controller/command", Float64, queue_size=10)
 
-        self.right_wheel_publisher = rospy.Publisher("/right_wheel_controller/command", Float64, queue_size=10)
-        self.left_wheel_publisher = rospy.Publisher("/left_wheel_controller/command", Float64, queue_size=10)
+        self.velocity_msg = Twist()
+        self.velocity_publisher = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
 
         rospy.Subscriber('/obstacle_localization', Float32MultiArray, self.distance_callback)
         rospy.Subscriber('/goal_localization', Float32MultiArray, self.goal_callback)
 
         self.action_map = {
-            0: -0.5, 
-            # 1: 0.0, 
-            # 2: 0.5
+            0: -0.1, 
+            1: 0.0, 
+            2: 0.1
         }
         rospy.sleep(0.5)
 
@@ -202,21 +207,33 @@ class AutonomousCarEnv(gym.Env):
         self.right_wheel_publisher.publish(right_speed)
         self.left_wheel_publisher.publish(left_speed)
 
+    def _set_velocity(self, v, wz):
+        self.velocity_msg.linear.x = v 
+        self.velocity_msg.angular.z = wz 
+        self.velocity_publisher.publish(self.velocity_msg)
+
     def step(self, action):
         rospy.sleep(0.1)
-        self.current_angular_velocity = self.action_map[action]
+        self.rate.sleep()
+        
+        if self.obstacle_distance > 4 or self.obstacle_distance == -1:
+            print("RL method is running")
+            wz = self.action_map[action]
+            v = self.current_linear_speed
+            self._set_velocity(v, wz)
+            print(f"linear velocity is {v} and angular velocity is {wz}")
 
-        # Calculate RPMs using the PID outputs
-        rpm_left, rpm_right = self._calculate_rpm(self.current_linear_speed, self.current_angular_velocity)
-        rpm_left, rpm_right = np.round(rpm_left, 2), np.round(rpm_right, 2)
-        print(f"right wheel rpm is {rpm_right} and left rpm is {rpm_left}")
-        print(f"linear velocity is {self.current_linear_speed} and angular velocity is {self.current_angular_velocity}")
+        # rpm_left, rpm_right = self._calculate_rpm(self.current_linear_speed, self.current_angular_velocity)
+        # rpm_left, rpm_right = np.round(rpm_left, 2), np.round(rpm_right, 2)
+        # print(f"right wheel rpm is {rpm_right} and left rpm is {rpm_left}")
 
         if self.training_mode and self.obstacle_distance != -1 and self.obstacle_distance <= 4:
             print("Obstacle Avoidance Method is running")
-            rpm_left, rpm_right = self.apf.run()
+            v, wz = self.apf.run()
+            self._set_velocity(v, wz)
+            print(f"linear velocity is {v} and angular velocity is {wz}")
             print("-------------------------------------------")
-        self._set_rpm_wheels(rpm_left, rpm_right)
+        # self._set_rpm_wheels(rpm_left, rpm_right)
 
         observation = self._get_state()
         reward = self._get_reward()
