@@ -1,4 +1,0 @@
-<launch>
-    <include file="$(find autonomous_car_controller)/launch/mobile_robot_launcher.launch"/>
-    <include file="$(find autonomous_car_distance_calculator)/launch/distance_calculation.launch"/>
-</launch>

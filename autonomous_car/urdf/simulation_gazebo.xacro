@@ -43,12 +43,12 @@
 
     <gazebo reference="car_body">
       <mu1>0.2</mu1>
-      <mu2>1</mu2>
+      <mu2>0.5</mu2>
     </gazebo>
 
     <gazebo reference="right_wheel">
         <mu1>0.2</mu1>
-        <mu2>1</mu2>
+        <mu2>0.5</mu2>
         <kp>1000000</kp>
         <kd>100</kd>
         <minDepth>0.001</minDepth>
@@ -58,7 +58,7 @@
 
     <gazebo reference="left_wheel">
         <mu1>0.2</mu1>
-        <mu2>1</mu2>
+        <mu2>0.5</mu2>
         <kp>1000000</kp>
         <kd>100</kd>
         <minDepth>0.001</minDepth>
@@ -68,7 +68,7 @@
 
     <gazebo reference="left_back_wheel">
         <mu1>0.2</mu1>
-        <mu2>1</mu2>
+        <mu2>0.5</mu2>
         <kp>1000000</kp>
         <kd>100</kd>
         <minDepth>0.001</minDepth>
@@ -78,7 +78,7 @@
 
     <gazebo reference="right_back_wheel">
         <mu1>0.2</mu1>
-        <mu2>1</mu2>
+        <mu2>0.5</mu2>
         <kp>1000000</kp>
         <kd>100</kd>
         <minDepth>0.001</minDepth>

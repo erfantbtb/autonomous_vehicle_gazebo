@@ -55,7 +55,7 @@ class AutonomousCarEnv(gym.Env):
         self.previous_goal_distance = -1
         self.previous_goal_angle = -1
 
-        self.current_linear_speed = 3.0
+        self.current_linear_speed = 4.0
         self.current_angular_velocity = 0.0
         self.wheel_base = 0.44 
         self.wheel_radius = 0.0975
@@ -97,9 +97,9 @@ class AutonomousCarEnv(gym.Env):
         self.collision_with_sphere = False
         self.reached_goal = False
 
-        position_robot = [0, np.random.uniform(-4, 4), 0]
-        position_obstacle = [np.random.uniform(10, 22), np.random.uniform(-2, 2), 0]
+        position_robot = [0, np.random.uniform(-3, 3), 0]
         position_goal = [32, np.random.uniform(-4, 4), 0]
+        position_obstacle = [np.random.uniform(10, 22), (position_robot[1] + position_goal[1]) / 2, 0]
 
         spawner = Spawner()
         spawner.spawn_robot("robot", position=position_robot)
@@ -156,10 +156,11 @@ class AutonomousCarEnv(gym.Env):
 
         # Penalty for being too close to obstacles (when detected)
         # if self.obstacle_distance != -1:
-        #     if self.obstacle_distance < 1.0:  # Danger zone
+        #     if self.obstacle_distance <= 1.0:  # Danger zone
         #         reward -= 100  # Strong penalty for close proximity to obstacles
-        #     elif 1.0 <= self.obstacle_distance < 5:  # Medium penalty for proximity
+        #     elif 1.0 <= self.obstacle_distance < 4:  # Medium penalty for proximity
         #         reward -= 50 / (self.obstacle_distance + 1)
+
         #     elif 5 <= self.obstacle_distance < 15:  # Light penalty for medium distance
         #         reward -= 10 / (self.obstacle_distance + 1)
         #     elif 15 <= self.obstacle_distance <= 30:  # Safe zone
@@ -307,7 +308,7 @@ if __name__ == "__main__":
 
                 plt.legend()
                 plt.pause(0.001)  # pause a bit so that plots are updated
-                plt.savefig("/home/erfan/catkin_ws/src/autonomous_car_rl_navigation/results2")
+                plt.savefig("/home/erfan/catkin_ws/src/autonomous_car_rl_navigation/results3")
 
                 if is_ipython:
                     display.display(plt.gcf())
@@ -333,7 +334,7 @@ if __name__ == "__main__":
     plot_callback = PlotCallback(plot_freq=100)
 
     # # Training process
-    checkpoint_callback = CheckpointCallback(save_freq=1000, save_path='/home/erfan/catkin_ws/models/', name_prefix='ppo_last')
+    checkpoint_callback = CheckpointCallback(save_freq=1000, save_path='/home/erfan/catkin_ws/models/', name_prefix='ppo_last1')
     model.learn(total_timesteps=100000, callback=[checkpoint_callback, plot_callback], progress_bar=True)
 
     # Evaluate the agent
@@ -341,7 +342,7 @@ if __name__ == "__main__":
     print(f"Mean reward: {mean_reward}, Std reward: {std_reward}")
 
     # # Save the trained model
-    model.save("ppo_last")
+    model.save("ppo_last1")
 
     env.close()
 

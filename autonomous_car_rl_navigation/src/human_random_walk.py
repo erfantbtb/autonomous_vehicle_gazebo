@@ -11,12 +11,12 @@ import random
 class Moving():
     def __init__(self):
         self.pub_model = rospy.Publisher('gazebo/set_model_state', ModelState, queue_size=1)
-        self.constant_x_speed = 2.0  # Constant speed along X-axis
+        self.constant_x_speed = 4.0  # Constant speed along X-axis
         self.max_y_speed = 2.0  # Maximum speed along Y-axis (for the sine wave)
         self.frequency = 0.5  # Frequency of the sine wave (in rad/s)
         self.direction = 1
         self.last_change_time = time.time()
-        self.change_direction_interval = 3.0  # Change direction every 3 seconds
+        self.change_direction_interval = 2.0  # Change direction every 3 seconds
         self.initial_time = time.time()  # Record the start time
         self.moving()
 
