@@ -1,0 +1,13 @@
+cv_bridge==1.16.2
+gymnasium==0.29.1
+ipython==8.12.3
+ipython==7.13.0
+matplotlib==3.1.2
+numpy==1.24.4
+numpy==1.17.4
+opencv_python==4.10.0.84
+opencv_python_headless==4.10.0.84
+rospy==1.16.0
+sensor_msgs==1.13.1
+stable_baselines3==2.3.2
+torch==2.3.1
