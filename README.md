@@ -9,10 +9,10 @@ For path planning and obstacle avoidance we used RL + APF method to achieve our 
 </p> -->
 
 ## Features 
-**Obstacle Avoidance**: Real-time detection and avoidance of obstacles using RGBD-camera data.
-**Path Planning**: Combining artificial potential field and  reinforcement learning for dynamic environments.
-**Goal Reaching**: Real-time detection and reaching of the goal using RGBD-camera data 
-**Gazebo Integration**: Simulates the vehicle's movement and sensor data in a realistic 3D environment.
+**Obstacle Avoidance**: Real-time detection and avoidance of obstacles using RGBD-camera data.   
+**Path Planning**: Combining artificial potential field and  reinforcement learning for dynamic environments.  
+**Goal Reaching**: Real-time detection and reaching of the goal using RGBD-camera data.  
+**Gazebo Integration**: Simulates the vehicle's movement and sensor data in a realistic 3D environment.  
 
 ## Installation 
 To run the simulation, ensure you have the following prerequisites installed:
@@ -45,5 +45,5 @@ The project consists of several key components:
 [Erfan Tabatabaei](https://github.com/erfantbtb)- Main Developer
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](/home/erfan/catkin_ws/src/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/erfantbtb/autonomous_vehicle_gazebo/blob/main/LICENSE) file for details.
 
