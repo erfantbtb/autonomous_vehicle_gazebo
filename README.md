@@ -24,6 +24,26 @@ To run the simulation, ensure you have the following prerequisites installed:
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/your-username/autonomous-vehicle-gazebo.git
-cd autonomous-vehicle-gazebo
+git clone https://github.com/erfantbtb/autonomous_vehicle_gazebo.git
+``` 
+
+## Architecture
+The project consists of several key components:
+1. **Vehicle Model**: A URDF model describing the physical parameters of the 4-wheeled Scooter.
+2. **Sensor Integration**: RGBD camera, and IMU sensors for environment perception.
+3. **Control**: Gazebo skid-steering plugin to controll wheel actuators
+4. **Reinforcement Learning + Artificial Potential field** : A custom Gym-ROS environment used to train the vehicle for obstacle avoidance and goal reaching.
+
+## Future Improvements
+1. Add more advanced sensor fusion algorithms for better localization and detection.
+2. integrate a controller like MPC for smoother path following.
+3. Improve the reinforcement learning model for better performance in dynamic environments.
+4. Expand the vehicle's capabilities to handle more complex tasks, such as parking or overtaking.
+5. Tune APF functions parameters 
+
+## Contributors
+[Erfan Tabatabaei](https://github.com/erfantbtb)- Main Developer
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](/home/erfan/catkin_ws/src/LICENSE) file for details.
 
